@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "chat-app",
+    "description": "This is a simple project to learn React Native and Web Socket",
     "slug": "chat-app",
     "version": "1.0.0",
     "orientation": "portrait",
