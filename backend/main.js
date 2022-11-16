@@ -19,13 +19,11 @@ const io = require('socket.io')(http, {
 io.on('connection', (socket) => {
     console.log('made socket connection', socket.id, socket.data);
 
-    socket.on('chat', data => {
-        console.log(data)
+    socket.on('chat', (data) => {
         io.sockets.emit('chat', data)
     });
 
     socket.on('typing', (data) => {
-        console.log(".........")
         socket.broadcast.emit('typing', data)
     });
 })
