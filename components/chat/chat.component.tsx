@@ -8,6 +8,7 @@ import { ChatItem } from "./chat-item/chat-item.component";
 import { IChatItem } from "./chat.type";
 import { io } from 'socket.io-client'
 import Styles from "./chat.style";
+import produce from 'immer';
 
 export const Chat = () => {
     const [chatInput, setChatInput] = useState('');
@@ -20,20 +21,23 @@ export const Chat = () => {
 
     useEffect(() => {
         socket.on('chat', (data) => {
-            setChatList([...chatList, JSON.parse(data)])
+
+            setChatList(oldList => produce(oldList, newList => {
+                newList.unshift(JSON.parse(data));
+            }))
         })
+
         socket.on('connect_error', () => {
             setTimeout(() => socket.connect(), 5000)
         })
 
-        return ()=>{
+        return () => {
             socket.close()
         }
     }, []);
 
 
     const onPress = () => {
-        console.log(">>>>>>>>>>>>>>>>>")
         socket.emit('chat', JSON.stringify({
             id: Math.random().toString(36).substring(2),
             text: chatInput,
@@ -48,7 +52,7 @@ export const Chat = () => {
         <View style={Styles.container}>
             <FlatList
                 inverted
-                data={[...chatList].sort((a, b) => a.timeStamp - b.timeStamp)}
+                data={[...chatList].sort((a, b) => b.timeStamp - a.timeStamp)}
                 renderItem={({ item }) => <ChatItem {...item} />}
                 keyExtractor={(item) => item.id} />
             <View style={Styles.sendSection}>
