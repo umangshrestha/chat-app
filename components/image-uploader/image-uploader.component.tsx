@@ -5,29 +5,29 @@ import { Platform, Button, Text, View, Image } from "react-native";
 import { ImageSize as resize } from "./image-uploader.config";
 import Styles from "./image-uploader.styles";
 import { useDispatch, useSelector } from 'react-redux'
-import { addImage } from "../../redux/slice";
+import { addImage } from "../../redux/slice/user.slice";
 import { RootState } from '../../redux/types';
 
 
 export const ImageUploader = () => {
 
-    const [message, setMessage] = useState("No image selected")
-    const imageUri = useSelector((state: RootState) => state.user.imageUri)
+    const [message, setMessage] = useState("No image selected");
+    const imageUri = useSelector((state: RootState) => state.user.imageUri);
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        const askForPermission = async () => {
-            if (Platform.OS === "web")
-                return
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== "granted") {
-                alert("Grant permission to proceed");
-            }
+    const askForPermission = async () => {
+        if (Platform.OS === "web") return
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+            alert("Grant permission to proceed");
         }
+    }
+
+    useEffect(() => {
         askForPermission();
     }, []);
 
-    const onPress = async () => {
+    const uploadImage = async () => {
         setMessage("uploading the image");
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -47,12 +47,21 @@ export const ImageUploader = () => {
         }
     }
 
-    return (
-        <View>
-            <Button title={`${imageUri ? "Update" : "Upload"} your image`} onPress={onPress} />
-            {imageUri ?
-                <Image resizeMode="cover" source={{ uri: imageUri }} style={Styles.image} /> :
-                <Text>{message}</Text>}
-        </View>
-    )
+    const removeImage = async () => {
+        dispatch(addImage({ uri: "", image: "" }))
+    }
+
+    return (<>
+        {imageUri ? (
+            <View>
+                <Image resizeMode="cover" source={{ uri: imageUri }} style={Styles.image} />
+                <Button title="Remove Image" onPress={removeImage} color="red" accessibilityLabel="Tap to remove image" />
+            </View>
+        ) : (
+            <View>
+                <Button title={`Upload image`} onPress={uploadImage} accessibilityLabel="Tap to upload image" />
+                <Text>{message}</Text>
+            </View>
+        )}
+    </>)
 }

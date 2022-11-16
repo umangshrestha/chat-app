@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
     nameLabel: {
         fontSize: 20,
+        textAlign: "center",
     },
 
     nameInput: {
@@ -13,6 +14,10 @@ export default StyleSheet.create({
         fontSize: 20,
     },
 
+    title: {
+        fontSize: 30,
+    },
+    
     container: {
         flex: 1,
         padding: 10,
